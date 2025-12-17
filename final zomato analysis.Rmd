@@ -1,0 +1,226 @@
+---
+title: "Zomato Bangalore Restaurant Analysis"
+author: "Rachit Malik"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    theme: flatly
+    toc: true
+    toc_float: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+library(tidyverse)
+library(janitor)
+library(skimr)
+library(stringr)
+```
+
+# Introduction
+
+This notebook documents an end-to-end **Zomato Bangalore Restaurant Analysis**. The goal is to understand what drives restaurant success using data-driven insights and to prepare clean datasets for **Tableau / Power BI dashboards**.
+
+The workflow follows a structured analytics process:
+
+**Prepare → Process → Analyze → Export**
+
+---
+
+#  Data Loading & Initial Inspection
+
+```{r load-data}
+zomato_data <- read.csv("C:/Users/a2z/Downloads/zomato.csv/zomato.csv")
+
+glimpse(zomato_data)
+skim_without_charts(zomato_data)
+```
+
+---
+
+# Data Health Check
+
+```{r data-health}
+# Missing values per column
+colSums(is.na(zomato_data))
+
+# Duplicate rows
+sum(duplicated(zomato_data))
+
+# Inspect messy columns
+head(unique(zomato_data$rate), 20)
+head(unique(zomato_data$approx_cost.for.two.people.), 20)
+unique(zomato_data$online_order)
+unique(zomato_data$book_table)
+```
+
+**Key Issues Identified**
+- Ratings include text values like `NEW` and `-`
+- Cost column contains commas
+- Online order & table booking stored as text
+
+---
+
+# Data Cleaning & Feature Engineering
+
+```{r data-cleaning}
+# Rename and clean column names
+zomato_v1 <- zomato_data %>% 
+  rename(cost = approx_cost.for.two.people.,
+         type = listed_in.type.,
+         city = listed_in.city.) %>% 
+  clean_names()
+
+# Fix data types and values
+zomato_v2 <- zomato_v1 %>% 
+  mutate(
+    rate = str_remove(rate, "/5"),
+    rate = ifelse(rate %in% c("NEW", "-"), NA, rate),
+    rate = as.numeric(rate),
+    cost = str_remove(cost, ","),
+    cost = as.numeric(cost)
+  )
+
+# Create binary flags for operations
+zomato_final <- zomato_v2 %>% 
+  mutate(
+    has_online = ifelse(online_order == "Yes", 1, 0),
+    has_table_booking = ifelse(book_table == "Yes", 1, 0)
+  ) %>% 
+  drop_na(cost)
+
+glimpse(zomato_final)
+summary(zomato_final)
+```
+
+---
+
+# Analysis Phase
+
+## Analysis 1: Location Saturation & Opportunity
+
+```{r location-analysis}
+loc_analysis <- zomato_final %>% 
+  group_by(location) %>% 
+  summarise(
+    restaurant_count = n(),
+    avg_rating = mean(rate, na.rm = TRUE),
+    avg_cost = mean(cost, na.rm = TRUE)
+  ) %>%
+  filter(restaurant_count > 50) %>%
+  arrange(desc(restaurant_count))
+
+head(loc_analysis, 10)
+head(arrange(loc_analysis, desc(avg_rating)), 10)
+```
+
+---
+
+## Analysis 2: Impact of Online Ordering & Table Booking
+
+```{r tech-impact}
+tech_impact <- zomato_final %>% 
+  group_by(has_online, has_table_booking) %>% 
+  summarise(
+    count = n(),
+    avg_rating = mean(rate, na.rm = TRUE),
+    avg_votes = mean(votes, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+tech_impact
+```
+
+---
+
+## Analysis 3: Price vs Rating Relationship
+
+```{r price-rating}
+ggplot(zomato_final, aes(x = cost, y = rate)) +
+  geom_point(alpha = 0.3, color = "darkblue") +
+  geom_smooth(method = "lm", color = "red") +
+  labs(
+    title = "Does Cost Affect Rating?",
+    subtitle = "Price vs Quality Relationship",
+    x = "Cost for Two (INR)",
+    y = "Rating (1–5)"
+  ) +
+  theme_minimal()
+```
+
+---
+
+## Analysis 4: Top Tier vs Average Restaurants (Spider Chart Prep)
+
+```{r radar-prep}
+radar_data <- zomato_final %>%
+  mutate(segment = ifelse(rate >= 4.5, "Top Tier (Top 1%)", "Average Restaurant")) %>%
+  group_by(segment) %>%
+  summarise(
+    Avg_Rating = mean(rate, na.rm = TRUE),
+    Avg_Cost = mean(cost, na.rm = TRUE),
+    Avg_Votes = mean(votes, na.rm = TRUE),
+    Online_order = mean(has_online, na.rm = TRUE) * 100,
+    Booking_Available = mean(has_table_booking, na.rm = TRUE) * 100,
+    .groups = "drop"
+  )
+
+radar_clean <- radar_data %>% drop_na()
+radar_clean
+```
+
+---
+
+# 🍽️ Cuisine & Dish Analysis
+
+## Top Cuisines
+
+```{r top-cuisines}
+top_cuisines <- zomato_final %>%
+  drop_na(cuisines) %>%
+  separate_rows(cuisines, sep = ",") %>%
+  mutate(cuisines = str_trim(cuisines)) %>%
+  count(cuisines, sort = TRUE) %>%
+  head(30)
+
+top_cuisines
+```
+
+## Most Loved Dishes (Top Restaurants)
+
+```{r top-dishes}
+top_dishes <- zomato_final %>%
+  filter(rate >= 4.0) %>%
+  drop_na(dish_liked) %>%
+  separate_rows(dish_liked, sep = ",") %>%
+  mutate(dish_liked = str_to_lower(str_trim(dish_liked))) %>%
+  filter(!dish_liked %in% c("friendly staff", "good ambience", "service", "cocktails")) %>%
+  count(dish_liked, sort = TRUE) %>%
+  head(50)
+
+top_dishes
+```
+
+---
+
+# Export Clean Data for BI Tools
+
+```{r export}
+write.csv(zomato_final, "C:/Users/a2z/Downloads/zomato_clean_data.csv", row.names = FALSE)
+write.csv(radar_clean, "C:/Users/a2z/Downloads/zomato_radar_profile.csv", row.names = FALSE)
+write.csv(top_cuisines, "C:/Users/a2z/Downloads/zomato_top_cuisines.csv", row.names = FALSE)
+write.csv(top_dishes, "C:/Users/a2z/Downloads/zomato_top_liked_dishes.csv", row.names = FALSE)
+
+getwd()
+```
+
+---
+
+# Conclusion
+
+This analysis reveals that **location saturation**, **operational technology (online ordering & booking)**, and **pricing balance** are strong indicators of restaurant success. The cleaned datasets are now ready for **Tableau / Power BI dashboards and strategic recommendations**.
+
+```{r session-info, echo=FALSE}
+sessionInfo()
