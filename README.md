@@ -187,7 +187,7 @@ Objective: Identify location and business model opportunities
   - Color gradient represents ratings (quality)
 - Scatter plot of cost vs rating by restaurant type
 - Slicers for location, price range, online ordering, and table booking
-![[page1](https://github.com/rachit-malik/zomato-bangalore-market-intelligence/blob/main/assets/Screenshot%202025-12-17%20064051.png?raw=true)
+![page_1](https://github.com/rachit-malik/zomato-bangalore-market-intelligence/blob/main/assets/Screenshot%202025-12-17%20064051.png?raw=true)
 ---
 
 ### Page 2: Operational Deep Dive
