@@ -1,4 +1,4 @@
-# ${\color{red}Zomato}$ Zomato Bangalore Market Intelligence Case Study  
+# ${\color{red}Zomato}$ Bangalore Market Intelligence Case Study  
 ## An End-to-End Data Analytics Project (Ask → Act)
 
 **Author:** Rachit Malik  
