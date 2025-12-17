@@ -36,10 +36,7 @@ To help restaurant investors make a **data-driven, low-risk decision** on:
 - [7. Power BI Dashboard Architecture](#7-power-bi-dashboard-architecture)
 - [8. Key Findings](#8-key-findings)
 - [9. Business Recommendations](#9-business-recommendations)
-- [10. Repository Structure](#10-repository-structure)
-- [11. How to Use This Repository](#11-how-to-use-this-repository)
-- [12. How to Publish a Strong Analytics Repository](#12-how-to-publish-a-strong-analytics-repository)
-- [13. Skills Demonstrated](#13-skills-demonstrated)
+- [10. Skills Demonstrated](#10-skills-demonstrated)
 
 ---
 
@@ -95,6 +92,10 @@ The dataset contains information on Bangalore-based restaurants, including:
 - Online ordering and table booking availability
 - Restaurant type (delivery, dine-out, cafes, pubs, etc.)
 
+![](https://github.com/rachit-malik/zomato-bangalore-market-intelligence/blob/main/assets/Screenshot%202025-12-15%20013645.png?raw=true)
+
+1[](https://github.com/rachit-malik/zomato-bangalore-market-intelligence/blob/main/assets/Screenshot%202025-12-15%20013634.png?raw=true)
+
 ### Important Note on Data Availability
 Due to GitHub file size limitations, **the original raw dataset is not uploaded to this repository**.
 
@@ -120,7 +121,9 @@ All data preparation was performed using **R and R Markdown** to ensure transpar
 - Normalized restaurant types
 - Filtered invalid or non-informative records
 
-### Why R Markdown?
+### Why R Markdown? 
+[Rmarkdownfile](https://github.com/rachit-malik/zomato-bangalore-market-intelligence/blob/main/final%20zomato%20analysis.Rmd)
+[html Rmarkdowm](https://github.com/rachit-malik/zomato-bangalore-market-intelligence/blob/main/final-zomato-analysis.html)
 - Combines code, explanation, and output
 - Makes analysis auditable
 - Shows analytical thinking, not just results
@@ -184,7 +187,7 @@ Objective: Identify location and business model opportunities
   - Color gradient represents ratings (quality)
 - Scatter plot of cost vs rating by restaurant type
 - Slicers for location, price range, online ordering, and table booking
-
+![[page1](https://github.com/rachit-malik/zomato-bangalore-market-intelligence/blob/main/assets/Screenshot%202025-12-17%20064051.png?raw=true)
 ---
 
 ### Page 2: Operational Deep Dive
@@ -193,7 +196,7 @@ Objective: Compare average restaurants with top 1% performers
 - Scale gap visualization showing votes and cost differences
 - Technology adoption comparison
 - Competitor table with conditional formatting on ratings
-
+![page2](https://github.com/rachit-malik/zomato-bangalore-market-intelligence/blob/main/assets/Screenshot%202025-12-17%20064101.png?raw=true)
 ---
 
 ### Page 3: Menu Intelligence
@@ -201,7 +204,7 @@ Objective: Identify winning product mix
 
 - Bar chart of most common cuisines
 - Word cloud of dishes mentioned in highly rated restaurants
-
+![page3](https://github.com/rachit-malik/zomato-bangalore-market-intelligence/blob/main/assets/Screenshot%202025-12-17%20064504.png?raw=true)
 ---
 
 ## 8. Key Findings
@@ -221,6 +224,20 @@ Objective: Identify winning product mix
 - Compete on experience and accessibility, not price wars
 
 ---
+## 10. Skills Demonstrated
 
-## 10. Repository Structure
+- Business problem framing
+- Data cleaning and transformation in R
+- Analytical and statistical thinking
+- Power BI dashboard design
+- Data storytelling and communication
+- End-to-end project ownership
 
+---
+
+## Final Note
+
+This project demonstrates that successful analytics is not about tools alone,  
+but about asking the right questions and converting data into decisions.
+
+If you found this project useful, feel free to star the repository.
